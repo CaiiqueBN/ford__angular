@@ -7,14 +7,16 @@ import { Veiculo } from '../models/car';
   providedIn: 'root'
 })
 export class DashboardService {
-  http = inject(HttpClient)
+  private http = inject(HttpClient);
+  private url = "http://localhost:3001";
 
-  getVeiculos(): Observable<Veiculo[]> {
-    return this.http.get<Veiculo[]>("http://localhost:3001/vehicles")
+  // Retorna o objeto contendo o array de veículos
+  getVeiculos(): Observable<{ vehicles: Veiculo[] }> {
+    return this.http.get<{ vehicles: Veiculo[] }>(`${this.url}/vehicles`);
   }
 
-  getVinInfos() {
-
+  // Faz o POST para buscar os detalhes do VIN
+  getVinInfos(vin: string): Observable<any> {
+    return this.http.post<any>(`${this.url}/vehicleData`, { vin });
   }
-
 }

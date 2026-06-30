@@ -10,15 +10,25 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>
-                <input type="text">
-            </td>
-            <td class="p-3">23344Km</td>
-            <td class="p-3">76%</td>
-            <td class="p-3">ON</td>
-            <td class="p-3">-12.2322</td>
-            <td class="p-3">-35.2314</td>
-        </tr>
+        @if (dados) {
+            <tr>
+                <td class="p-3 font-monospace">{{ vin }}</td>
+                <td class="p-3">{{ dados.odometro }} Km</td>
+                <td class="p-3">{{ dados.nivelCombustivel }}%</td>
+                <td class="p-3">
+                    <span class="badge" [ngClass]="dados.status === 'on' ? 'bg-success' : 'bg-danger'">
+                        {{ dados.status | uppercase }}
+                    </span>
+                </td>
+                <td class="p-3">{{ dados.lat }}</td>
+                <td class="p-3">{{ dados.long }}</td>
+            </tr>
+        } @else {
+            <tr>
+                <td colspan="6" class="text-center p-4 text-muted">
+                    Selecione um veículo acima para carregar os dados detalhados.
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
