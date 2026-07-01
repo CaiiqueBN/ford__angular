@@ -15,11 +15,11 @@ export class DashboardComponent implements OnInit {
   dashboardService = inject(DashboardService);
 
   veiculos: Veiculo[] = [];
-  veiculoSelecionado: any = null; // Usado any temporariamente por conta do 'volumetotal' minúsculo da API
+  veiculoSelecionado: any = null;
   dadosTabela: any = null;
   vinSelecionado: string = '';
 
-  // Mapeamento estático dos VINs que o seu backend espera receber
+  // Mapeamento estático dos VINs
   private vinMap: { [key: number]: string } = {
     1: "2FRHDUYS2Y63NHD22454", // Ranger
     2: "2RFAASDY54E4HDU34874", // Mustang
@@ -36,30 +36,55 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  // Ação 1: Quando escolhe pelo <select>
   onVeiculoChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     const veiculoId = Number(selectElement.value);
 
-    // Encontra o veículo selecionado na lista do componente
     this.veiculoSelecionado = this.veiculos.find(v => v.id === veiculoId);
-
+    
     if (this.veiculoSelecionado) {
-      // Descobre o VIN usando o ID do veículo mapeado
       this.vinSelecionado = this.vinMap[veiculoId] || '';
+      this.buscarDadosDoVin(this.vinSelecionado);
+    } else {
+      this.vinSelecionado = '';
+      this.dadosTabela = null;
+    }
+  }
 
-      // Busca os dados da tabela passando o VIN correto
-      this.dashboardService.getVinInfos(this.vinSelecionado).subscribe({
+  // Ação 2: Quando digita direto no <input> da Tabela
+  onBuscarVinManual(vinDigitado: string) {
+    this.vinSelecionado = vinDigitado;
+
+    // Procura de qual ID é esse VIN no nosso mapeamento
+    const idEncontrado = Object.keys(this.vinMap).find(key => this.vinMap[Number(key)] === vinDigitado);
+
+    if (idEncontrado) {
+      // Se achou a qual carro pertence, atualiza a imagem e os cards
+      this.veiculoSelecionado = this.veiculos.find(v => v.id === Number(idEncontrado));
+    } else {
+      // Se digitou um VIN que não tá mapeado nos 4 carros principais, limpa a imagem/cards
+      this.veiculoSelecionado = null;
+    }
+
+    // Busca os dados da tabela (independente de ter achado o carro ou não)
+    this.buscarDadosDoVin(vinDigitado);
+  }
+
+  // Ação Central: Faz a requisição na API
+  private buscarDadosDoVin(vin: string) {
+    if (vin) {
+      this.dashboardService.getVinInfos(vin).subscribe({
         next: (dados) => {
           this.dadosTabela = dados;
         },
         error: (err) => {
-          console.error(err);
+          console.error('VIN inválido ou não encontrado na API', err);
           this.dadosTabela = null;
         }
       });
     } else {
       this.dadosTabela = null;
-      this.vinSelecionado = '';
     }
   }
 }

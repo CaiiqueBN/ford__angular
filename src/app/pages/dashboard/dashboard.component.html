@@ -2,9 +2,12 @@
     <div class="shadow border border-black p-3">
         <h1>Veículos</h1>
         <select (change)="onVeiculoChange($event)">
-            <option value="">Selecione um veículo</option>
+            <option value="" [selected]="!veiculoSelecionado">Selecione um veículo</option>
+            
             @for (item of veiculos; track item.id) {
-                <option [value]="item.id">{{ item.vehicle }}</option>
+                <option [value]="item.id" [selected]="veiculoSelecionado?.id === item.id">
+                    {{ item.vehicle }}
+                </option>
             }
         </select>
     </div>
@@ -22,5 +25,9 @@
 }
 
 <div>
-    <app-car-table [dados]="dadosTabela" [vin]="vinSelecionado"></app-car-table>
+    <app-car-table 
+        [dados]="dadosTabela" 
+        [vin]="vinSelecionado"
+        (buscarVin)="onBuscarVinManual($event)">
+    </app-car-table>
 </div>

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -11,4 +11,12 @@ import { CommonModule } from '@angular/common';
 export class CarTableComponent {
   @Input() dados: any = null;
   @Input() vin: string = '';
+  
+  @Output() buscarVin = new EventEmitter<string>();
+
+  onVinSubmit(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const valor = input.value.trim();
+    this.buscarVin.emit(valor);
+  }
 }

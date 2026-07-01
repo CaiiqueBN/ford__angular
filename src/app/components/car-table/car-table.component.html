@@ -1,7 +1,7 @@
 <table class="mt-2 table">
     <thead>
         <tr>
-            <th class="p-3">VIN</th>
+            <th class="p-3" style="width: 260px;">VIN</th>
             <th class="p-3">ODOMETRO</th>
             <th class="p-3">NÍVEL DO COMBUSTÍVEL</th>
             <th class="p-3">STATUS</th>
@@ -10,25 +10,32 @@
         </tr>
     </thead>
     <tbody>
-        @if (dados) {
-            <tr>
-                <td class="p-3 font-monospace">{{ vin }}</td>
-                <td class="p-3">{{ dados.odometro }} Km</td>
-                <td class="p-3">{{ dados.nivelCombustivel }}%</td>
-                <td class="p-3">
+        <tr>
+            <td class="p-2">
+                <input 
+                    type="text" 
+                    class="form-control font-monospace" 
+                    placeholder="Digite o VIN e aperte Enter"
+                    [value]="vin"
+                    (keydown.enter)="onVinSubmit($event)"
+                    (blur)="onVinSubmit($event)">
+            </td>
+            
+            @if (dados) {
+                <td class="p-3 align-middle">{{ dados.odometro }} Km</td>
+                <td class="p-3 align-middle">{{ dados.nivelCombustivel }}%</td>
+                <td class="p-3 align-middle">
                     <span class="badge" [ngClass]="dados.status === 'on' ? 'bg-success' : 'bg-danger'">
                         {{ dados.status | uppercase }}
                     </span>
                 </td>
-                <td class="p-3">{{ dados.lat }}</td>
-                <td class="p-3">{{ dados.long }}</td>
-            </tr>
-        } @else {
-            <tr>
-                <td colspan="6" class="text-center p-4 text-muted">
-                    Selecione um veículo acima para carregar os dados detalhados.
+                <td class="p-3 align-middle">{{ dados.lat }}</td>
+                <td class="p-3 align-middle">{{ dados.long }}</td>
+            } @else {
+                <td colspan="5" class="text-center p-3 text-muted align-middle">
+                    Nenhum dado carregado para este VIN.
                 </td>
-            </tr>
-        }
+            }
+        </tr>
     </tbody>
 </table>
