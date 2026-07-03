@@ -1,44 +1,43 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { LoginService } from '../../services/login.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-form',
+  standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.css'
 })
-
 export class LoginFormComponent {
-
   loginService = inject(LoginService);
-  router = inject(Router);
+  
+  @Output() loginSuccess = new EventEmitter<void>();
 
+  hidePassword = true;
   loginForm = new FormGroup({
     nome: new FormControl("", [Validators.required]),
     senha: new FormControl("", [Validators.required])
-  })
+  });
+
+  togglePasswordVisibility() {
+    this.hidePassword = !this.hidePassword;
+  }
 
   onSubmit() {
-    const { nome, senha } = this.loginForm.value;
-
-    if(!this.loginForm.valid || !nome || !senha) {
-      alert("Existem campos não preenchidos!")
+    if(!this.loginForm.valid) {
+      alert("Existem campos não preenchidos!");
       return;
     }
 
-    this.loginService.login(nome, senha).subscribe({
+    const { nome, senha } = this.loginForm.value;
+    this.loginService.login(nome!, senha!).subscribe({
       error: (err) => {
-        if(err.status === 401) {
-          alert("Usuário ou senha inválidos!")
-          return
-        }
-          alert("Erro interno do servidor. Tente novamente mais tarde.")
-        },
-
+        if(err.status === 401) alert("Usuário ou senha inválidos!");
+        else alert("Erro interno do servidor.");
+      },
       next: () => {
-        this.router.navigate(["/home"])
+        this.loginSuccess.emit();
       }
     });
   }

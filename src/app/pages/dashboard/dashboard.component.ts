@@ -1,30 +1,33 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { CardComponent } from '../../components/card/card.component';
 import { CarTableComponent } from "../../components/car-table/car-table.component";
 import { DashboardService } from '../../services/dashboard.service';
 import { Veiculo } from '../../models/car';
+import { MenuComponent } from '../../components/menu/menu.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CardComponent, CarTableComponent],
+  imports: [CommonModule, CardComponent, CarTableComponent, MenuComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit {
   dashboardService = inject(DashboardService);
+  router = inject(Router);
 
   veiculos: Veiculo[] = [];
   veiculoSelecionado: any = null;
   dadosTabela: any = null;
   vinSelecionado: string = '';
 
-  // Mapeamento estático dos VINs
   private vinMap: { [key: number]: string } = {
-    1: "2FRHDUYS2Y63NHD22454", // Ranger
-    2: "2RFAASDY54E4HDU34874", // Mustang
-    3: "2FRHDUYS2Y63NHD22455", // Territory
-    4: "2RFAASDY54E4HDU34875"  // Bronco Sport
+    1: "2FRHDUYS2Y63NHD22454",
+    2: "2RFAASDY54E4HDU34874",
+    3: "2FRHDUYS2Y63NHD22455",
+    4: "2RFAASDY54E4HDU34875"
   };
 
   ngOnInit() {
@@ -36,7 +39,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // Ação 1: Quando escolhe pelo <select>
   onVeiculoChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     const veiculoId = Number(selectElement.value);
@@ -52,26 +54,19 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // Ação 2: Quando digita direto no <input> da Tabela
   onBuscarVinManual(vinDigitado: string) {
     this.vinSelecionado = vinDigitado;
-
-    // Procura de qual ID é esse VIN no nosso mapeamento
     const idEncontrado = Object.keys(this.vinMap).find(key => this.vinMap[Number(key)] === vinDigitado);
 
     if (idEncontrado) {
-      // Se achou a qual carro pertence, atualiza a imagem e os cards
       this.veiculoSelecionado = this.veiculos.find(v => v.id === Number(idEncontrado));
     } else {
-      // Se digitou um VIN que não tá mapeado nos 4 carros principais, limpa a imagem/cards
       this.veiculoSelecionado = null;
     }
 
-    // Busca os dados da tabela (independente de ter achado o carro ou não)
     this.buscarDadosDoVin(vinDigitado);
   }
 
-  // Ação Central: Faz a requisição na API
   private buscarDadosDoVin(vin: string) {
     if (vin) {
       this.dashboardService.getVinInfos(vin).subscribe({
@@ -86,5 +81,10 @@ export class DashboardComponent implements OnInit {
     } else {
       this.dadosTabela = null;
     }
+  }
+
+  logout() {
+    sessionStorage.clear();
+    this.router.navigate([""]);
   }
 }

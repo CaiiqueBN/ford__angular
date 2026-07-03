@@ -1,0 +1,28 @@
+.navbar-top {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  padding: 15px;
+  border-bottom: 1px solid #ffffff;
+  background-color: #ffffff;
+}
+
+.actions-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.btn-custom-logout {
+  background-color: #ffffff;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-custom-logout:hover {
+  background-color: #dc3545;
+  color: #ffffff;
+}
